@@ -35,8 +35,12 @@ import java.time.ZonedDateTime;
 
 import static org.jackhuang.hmcl.util.logging.Logger.LOG;
 
+/// Detects the machine region and supplies the network-region policy used by download pages.
 @NotNullByDefault
 public final class RegionUtils {
+
+    /// Local patch: keep downloads available while retaining upstream region detection for future merges.
+    private static final boolean RESTRICT_DOWNLOADS_BY_REGION = false;
 
     /// Pre-check if the network is in China Mainland to avoid blocking the UI thread.
     public static void init() {
@@ -107,8 +111,13 @@ public final class RegionUtils {
         }
     }
 
+    /// Returns whether download pages should apply the mainland-network restriction.
     public static boolean isIsChinaMainlandNetwork() {
-        Boolean value = isChinaMainlandNetwork;
+        // Bypass both cached restrictions and IP lookup when regional restrictions are disabled.
+        if (!RESTRICT_DOWNLOADS_BY_REGION)
+            return false;
+
+        @Nullable Boolean value = isChinaMainlandNetwork;
         if (value != null)
             return value;
 

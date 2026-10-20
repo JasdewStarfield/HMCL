@@ -150,6 +150,7 @@ public final class HMCLDownloadProvider extends DownloadProvider {
         );
     }
 
+    /// Fetches component versions, retaining mirror fallback on mainland machines for Forge and NeoForge.
     @Override
     protected Task<? extends ComponentRemoteVersionList<?>> fetchVersionsAsync(GameComponentType type, @Nullable GameVersionNumber gameVersion) {
         assert (gameVersion == null) == (type == GameComponentType.GAME);
@@ -158,7 +159,8 @@ public final class HMCLDownloadProvider extends DownloadProvider {
                 Task<ComponentRemoteVersionList<ForgeRemoteVersion>> fetchOfficial = ForgeRemoteVersion.fetchAsync(this, gameVersion);
 
                 DownloadSource source = versionListSource;
-                if (source == DownloadSource.DEFAULT || source == DownloadSource.OFFICIAL) {
+                // Keep the pre-restriction mirror fallback for mainland machines.
+                if (!RegionUtils.isIsChinaMainlandMachine() && (source == DownloadSource.DEFAULT || source == DownloadSource.OFFICIAL)) {
                     return fetchOfficial;
                 }
 
@@ -173,7 +175,8 @@ public final class HMCLDownloadProvider extends DownloadProvider {
                 Task<ComponentRemoteVersionList<NeoForgeRemoteVersion>> fetchOfficial = NeoForgeRemoteVersion.fetchAsync(this, gameVersion);
 
                 DownloadSource source = versionListSource;
-                if (source == DownloadSource.DEFAULT || source == DownloadSource.OFFICIAL) {
+                // Keep the pre-restriction mirror fallback for mainland machines.
+                if (!RegionUtils.isIsChinaMainlandMachine() && (source == DownloadSource.DEFAULT || source == DownloadSource.OFFICIAL)) {
                     return fetchOfficial;
                 }
                 Task<ComponentRemoteVersionList<NeoForgeRemoteVersion>> fetchBMCL = NeoForgeRemoteVersion.fetchBMCLAsync(bmclRoot, gameVersion);
